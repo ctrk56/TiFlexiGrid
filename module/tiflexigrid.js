@@ -57,9 +57,9 @@ var init = function(opts){
 	columnWidth = (newWidth / columns) - space;
 	
 	//ADJUST THE SCROLLVIEW
-	fgScrollView.left = space;
+	fgScrollView.left = 0;
 	fgScrollView.top = space;
-	fgScrollView.right = -1;
+	fgScrollView.right = 0;
 	
 	//MAIN BG COLOR
 	frameBGcolor = params.gridBackgroundColor || '#fff';
