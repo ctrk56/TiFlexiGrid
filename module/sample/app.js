@@ -1,27 +1,53 @@
 //CREATES THE MAIN WINDOW, HEADER AND A TITLE
 var win = Titanium.UI.createWindow({  
-    title:'Tab 1',
-    backgroundColor:'#fff',
-    layout:'vertical'
+    backgroundColor:'#FFF',
+    layout:'vertical',
+    orientationModes:[Titanium.UI.PORTRAIT, Titanium.UI.LANDSCAPE_LEFT, Titanium.UI.LANDSCAPE_RIGHT]
 });
 
-var header = Ti.UI.createView({
-	width:Ti.UI.FILL,
-	height:60,
-	backgroundColor:'#00b3ed',
-	top:0
+win.addEventListener('open', function(){
+	var activity = this.getActivity();
+	if(activity){
+		
+		activity.onCreateOptionsMenu = function(e){
+                var menu = e.menu; 
+                
+                //Aparente
+                var menuCompartilhar = menu.add({
+                	icon: Titanium.App.Android.R.drawable.ic_action_content_add,
+                    title : 'Criar',
+                    showAsAction : Ti.Android.SHOW_AS_ACTION_ALWAYS
+                });  
+                
+                menuCompartilhar.addEventListener("click", function(e){
+                	TFG.addGridItems(items);
+                });
+                
+                var menuFavoritar = menu.add({
+                    icon: Titanium.App.Android.R.drawable.ic_action_navigation_close,
+                    title : 'Limpar',
+                    showAsAction : Ti.Android.SHOW_AS_ACTION_ALWAYS,
+                });
+                
+                menuFavoritar.addEventListener("click", function(e){
+                	TFG.clearGrid();
+                }); 
+            }; 
+            
+            activity.invalidateOptionsMenu();
+		
+	    var actionBar = activity.getActionBar(); 
+	    
+        if (actionBar) { 
+            actionBar.setDisplayHomeAsUp(false);
+            actionBar.setTitle('GridLayout');
+            actionBar.show();
+            actionBar.setOnHomeIconItemSelected(function(){
+                win.close();
+           	});
+        }
+    }
 });
-
-var title = Ti.UI.createLabel({
-	text:'TiFlexiGrid',
-	width:Ti.UI.SIZE,
-	height:Ti.UI.SIZE,
-	color:'#fff',
-	font:{fontSize:18,fontWeight:'bold'},
-	bottom:10
-});
-header.add(title);
-
 
 //HERE WE CREATE OUR GRID ITEMS.
 var items = [];
@@ -55,17 +81,19 @@ for(var x=0;x<25;x++){
 
 //CUSTOM FUNCTION TO DEFINE WHAT HAPPENS WHEN AN ITEM IN THE GRID IS CLICKED
 var showGridItemInfo = function(e){
-	alert('Title is: ' + e.source.data.title + '.');
+	TFG.openModal('http://www.fodecast.com.br/wp-content/uploads/2012/01/criatividade-60261.jpg');
+	//alert('Title is: ' + e.source.data.title + '.');
 };
 
 
 //INCLUDE THE TIFLEXIGRID MODULE
-var TFG = require('tiflexigrid');
+var TFG = require('/services/tiflexigrid');
 
 //INITIALIZE & CREATE TIFLEXIGRID
 var grid_view = TFG.init({
-	columns:4,
-	space:5,
+	portraitColumns: 4,
+	landscapeColumns: 7,
+	space: 5,
 	gridBackgroundColor:'#fff',
 	itemHeightDelta: 0,
 	itemBackgroundColor:'#eee',
@@ -75,39 +103,6 @@ var grid_view = TFG.init({
 	onItemClick: showGridItemInfo,
 	data:items
 });
-
-//BUTTON FOR CLEARING THE GRID VIEW
-var btn_clear = Ti.UI.createButton({
-	width:Ti.UI.SIZE,
-	height:Ti.UI.SIZE,
-	title:'Clear',
-	right:10,
-	bottom:8
-});
-
-btn_clear.addEventListener('click',function(e){
-	TFG.clearGrid();
-});
-header.add(btn_clear);
-
-
-//BUTTON FOR ADDING ITEMS TO THE GRID VIEW
-var btn_add = Ti.UI.createButton({
-	width:Ti.UI.SIZE,
-	height:Ti.UI.SIZE,
-	title:'Add',
-	left:10,
-	bottom:8
-});
-
-btn_add.addEventListener('click',function(e){
-	TFG.addGridItems(items);
-});
-header.add(btn_add);
-
-
-//ADD THE HEADER AND THE GRID VIEW TO THE MAIN WINDOW
-win.add(header);
 win.add(grid_view);
 
 //OPEN MAIN WIN
