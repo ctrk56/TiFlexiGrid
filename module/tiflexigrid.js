@@ -14,9 +14,8 @@
  * Copyright (c) 2014 Pablo Rodriguez Ruiz, @pablorr18
  */
 
-var params,columns,space,data,screenWidth,newWidth,columnWidth,frameBGcolor,itemsOptions,onItemClick;
+var params,space,data,portraitColumns,landscapeColumns,screenWidth,newWidth,columnWidth,frameBGcolor,itemsOptions,onItemClick;
 var OS = Ti.Platform.osname;
-
 
 var fgMain = Ti.UI.createView({
 	backgroundColor: '#fff',
@@ -24,38 +23,45 @@ var fgMain = Ti.UI.createView({
 	width: Ti.UI.FILL
 });
 
-	var fgWrapper = Ti.UI.createView({
-		width:Ti.UI.FILL,
-		height:Ti.UI.FILL,
-		backgroundColor:'transparent'
-	});
+var fgWrapper = Ti.UI.createView({
+	width:Ti.UI.FILL,
+	height:Ti.UI.FILL,
+	backgroundColor:'transparent'
+});
 
-	var fgScrollView = Ti.UI.createScrollView({
-		width: Ti.UI.FILL,
-		height:Ti.UI.FILL,
-		contentHeight: Ti.UI.SIZE,
-		contentWidth: Ti.UI.FILL,
-		layout:'horizontal',
-		backgroundColor:'transparent',
-		scrollType:'vertical'
-	});
+var fgScrollView = Ti.UI.createScrollView({
+	width: Ti.UI.FILL,
+	height:Ti.UI.FILL,
+	contentHeight: Ti.UI.SIZE,
+	contentWidth: Ti.UI.FILL,
+	layout:'horizontal',
+	backgroundColor:'transparent',
+	scrollType:'vertical'
+});
 
-	fgWrapper.add(fgScrollView);
+fgWrapper.add(fgScrollView);
 fgMain.add(fgWrapper);
 
 var init = function(opts){
 	params = opts || {};	
-	columns = params.columns || 4;
 	space = params.space || 5;
 	data = params.data || {};
 	
+	portraitColumns = params.portraitColumns || 2;
+	landscapeColumns = params.landscapeColumns || 3;
+	
 	screenWidth = params.width || Ti.Platform.displayCaps.getPlatformWidth();
-    if (OS=='android') {
+	if (OS == 'android') {
         screenWidth /= Ti.Platform.displayCaps.logicalDensityFactor;
     }
 	newWidth = screenWidth - space;
-	columnWidth = (newWidth / columns) - space;
-	
+		
+    if(Titanium.Gesture.isLandscape()){
+		columnWidth = (newWidth / landscapeColumns) - space;
+    }else if(Titanium.Gesture.isPortrait()){
+		columnWidth = (newWidth / portraitColumns) - space;
+    }
+    
 	//ADJUST THE SCROLLVIEW
 	fgScrollView.left = 0;
 	fgScrollView.top = space;
@@ -92,6 +98,42 @@ var addGridItems = function(args){
 	}
 };
 
+Titanium.Gesture.addEventListener('orientationchange', function(e){
+	screenWidth = params.width || Ti.Platform.displayCaps.getPlatformWidth();
+	if (OS == 'android') {
+        screenWidth /= Ti.Platform.displayCaps.logicalDensityFactor;
+    }
+	newWidth = screenWidth - space;
+		
+	if(e.source.landscape){
+		for(item in localData){
+			localData[item].animate({
+				width: (newWidth / landscapeColumns) - space, 
+				height: (newWidth / landscapeColumns) - space
+			});
+		}
+	}
+	else{
+		for(item in localData){
+			localData[item].animate({
+				width: (newWidth / portraitColumns) - space,
+				height: (newWidth / portraitColumns) - space
+			});
+		}
+	}
+	
+	Titanium.API.info('#######################################################');
+	Titanium.API.info('screenWidth: ' + screenWidth);
+	Titanium.API.info('screenWidth / landscapeColumns: ' + screenWidth / landscapeColumns);
+	Titanium.API.info('screenWidth / portraitColumns: ' + screenWidth / portraitColumns);
+	Titanium.API.info('#######################################################');
+	Titanium.API.info('newWidth: ' + newWidth);
+	Titanium.API.info('newWidth / landscapeColumns: ' + newWidth / landscapeColumns);
+	Titanium.API.info('newWidth / portraitColumns: ' + newWidth / portraitColumns);
+	Titanium.API.info('#######################################################');
+});
+
+var localData = [];
 var addGridItem = function(item){
 	var frame = Ti.UI.createView({
 		width:columnWidth,
@@ -105,6 +147,7 @@ var addGridItem = function(item){
 		borderRadius:itemsOptions.borderRadius,
 		borderWidth:itemsOptions.borderWidth
 	});
+	localData.push(frame);
 	
 	var overlay = Ti.UI.createView({
 		width:Ti.UI.FILL,
@@ -144,16 +187,16 @@ var openModal = function(url){
 		visible:false
 	});
 	
-		var imgView = Ti.UI.createImageView({
-			image: url,
-			width:Ti.UI.SIZE,
-			height: Ti.UI.SIZE
-		});
+	var imgView = Ti.UI.createImageView({
+		image: url,
+		width:Ti.UI.SIZE,
+		height: Ti.UI.SIZE
+	});
 	
 	topView.add(imgView);
 	fgMain.add(overlay);
 		
-	if (OS!='android') {
+	if (OS != 'android') {
 		//ANIMATION OF OVERLAY
 		overlay.animate({opacity:0.7,duration:200});
 		
@@ -187,7 +230,7 @@ var openModal = function(url){
 	}
 	
 	topView.addEventListener('click',function(e){
-		if (OS_IOS){
+		if (OS != 'android'){
 			var t3 = Titanium.UI.create2DMatrix();
 			t3 = t3.scale(1.2);
 			var a2 = Titanium.UI.createAnimation();
