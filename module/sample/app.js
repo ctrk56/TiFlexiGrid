@@ -13,23 +13,30 @@ win.addEventListener('open', function(){
                 var menu = e.menu; 
                 
                 //Aparente
-                var menuCompartilhar = menu.add({
-                	icon: Titanium.App.Android.R.drawable.ic_action_content_add,
-                    title : 'Criar',
+                var menuCriar = menu.add({
+                    title : 'Create',
                     showAsAction : Ti.Android.SHOW_AS_ACTION_ALWAYS
                 });  
                 
-                menuCompartilhar.addEventListener("click", function(e){
-                	TFG.addGridItems(items);
+                menuCriar.addEventListener("click", function(e){
+                	TFG.addGridItems(items, false);
                 });
                 
-                var menuFavoritar = menu.add({
-                    icon: Titanium.App.Android.R.drawable.ic_action_navigation_close,
-                    title : 'Limpar',
+                var menuAppend = menu.add({
+                    title : 'Append',
+                    showAsAction : Ti.Android.SHOW_AS_ACTION_ALWAYS
+                });  
+                
+                menuAppend.addEventListener("click", function(e){
+                	TFG.addGridItems(items, true);
+                });
+                
+                var menuLimpar = menu.add({
+                    title : 'Clear',
                     showAsAction : Ti.Android.SHOW_AS_ACTION_ALWAYS,
                 });
                 
-                menuFavoritar.addEventListener("click", function(e){
+                menuLimpar.addEventListener("click", function(e){
                 	TFG.clearGrid();
                 }); 
             }; 
@@ -87,12 +94,12 @@ var showGridItemInfo = function(e){
 
 
 //INCLUDE THE TIFLEXIGRID MODULE
-var TFG = require('/services/tiflexigrid');
+var TFG = require('GridView');
 
 //INITIALIZE & CREATE TIFLEXIGRID
 var grid_view = TFG.init({
-	portraitColumns: 4,
-	landscapeColumns: 7,
+	portraitColumns: 2,
+	landscapeColumns: 3,
 	space: 5,
 	gridBackgroundColor:'#fff',
 	itemHeightDelta: 0,
