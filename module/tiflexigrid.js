@@ -52,8 +52,8 @@ var init = function(opts){
 	
 	screenWidth = params.width || Ti.Platform.displayCaps.getPlatformWidth();
 	if (OS == 'android') {
-        screenWidth /= Ti.Platform.displayCaps.logicalDensityFactor;
-    }
+        	screenWidth /= Ti.Platform.displayCaps.logicalDensityFactor;
+    	}
 	newWidth = screenWidth - space;
 		
    	orientationCheck();
