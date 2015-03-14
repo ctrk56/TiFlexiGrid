@@ -89,9 +89,9 @@ var init = function(opts){
 var orientationCheck = function(){
 	if(Titanium.Gesture.isLandscape()){
 		columnWidth = (newWidth / landscapeColumns) - space;
-    }else if(Titanium.Gesture.isPortrait()){
+    	}else if(Titanium.Gesture.isPortrait()){
 		columnWidth = (newWidth / portraitColumns) - space;
-    }
+    	}
 };
 
 var addGridItems = function(args, append){
