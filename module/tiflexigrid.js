@@ -56,14 +56,10 @@ var init = function(opts){
     }
 	newWidth = screenWidth - space;
 		
-    if(Titanium.Gesture.isLandscape()){
-		columnWidth = (newWidth / landscapeColumns) - space;
-    }else if(Titanium.Gesture.isPortrait()){
-		columnWidth = (newWidth / portraitColumns) - space;
-    }
+   	orientationCheck();
     
 	//ADJUST THE SCROLLVIEW
-	fgScrollView.left = 0;
+	fgScrollView.left = 4;
 	fgScrollView.top = space;
 	fgScrollView.right = 0;
 	
@@ -90,8 +86,19 @@ var init = function(opts){
 	return fgMain;
 };
 
-var addGridItems = function(args){
-	clearGrid();
+var orientationCheck = function(){
+	if(Titanium.Gesture.isLandscape()){
+		columnWidth = (newWidth / landscapeColumns) - space;
+    }else if(Titanium.Gesture.isPortrait()){
+		columnWidth = (newWidth / portraitColumns) - space;
+    }
+};
+
+var addGridItems = function(args, append){
+	if(!append){
+		clearGrid();
+	};
+	orientationCheck();
 	data = args || {};
 	for (var x=0;x < data.length; x++){
 		addGridItem(data[x]);
