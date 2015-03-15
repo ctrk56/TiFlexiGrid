@@ -14,7 +14,7 @@
  * Copyright (c) 2014 Pablo Rodriguez Ruiz, @pablorr18
  */
 
-var params,space,data,portraitColumns,landscapeColumns,screenWidth,newWidth,columnWidth,frameBGcolor,itemsOptions,onItemClick;
+var params,space,data,itemCount,lazyLoadingTolerance,scrollViewHeight,portraitColumns,landscapeColumns,screenWidth,newWidth,columnWidth,frameBGcolor,itemsOptions,onItemClick;
 var OS = Ti.Platform.osname;
 
 var fgMain = Ti.UI.createView({
@@ -39,6 +39,21 @@ var fgScrollView = Ti.UI.createScrollView({
 	scrollType:'vertical'
 });
 
+fgScrollView.addEventListener('scroll', function (e) {
+    var tolerance = 50;
+    if((e.y / Ti.Platform.displayCaps.logicalDensityFactor) >= (scrollViewHeight - lazyLoadingTolerance)){
+    	Ti.API.info('Yeah! You can do something now.');
+    }
+    
+    //var cnt = fgScrollView.children.length;
+	//var lastChild = fgScrollView.children[cnt-1];
+    //var cHeight = (lastChild.rect.y + lastChild.getSize().height + space) - fgScrollView.getSize().height;
+    
+    scrollViewHeight = (fgScrollView.children[fgScrollView.children.length-1].rect.y + fgScrollView.children[fgScrollView.children.length-1].getSize().height + space) - fgScrollView.getSize().height;
+    Ti.API.info('Real = ' + e.y / Ti.Platform.displayCaps.logicalDensityFactor + 'dp');
+    Ti.API.info('Calculado = ' + scrollViewHeight + 'dp');
+});
+
 fgWrapper.add(fgScrollView);
 fgMain.add(fgWrapper);
 
@@ -46,14 +61,16 @@ var init = function(opts){
 	params = opts || {};	
 	space = params.space || 5;
 	data = params.data || {};
+	itemCount = 0;
+	lazyLoadingTolerance = params.lazyLoadingTolerance;
 	
 	portraitColumns = params.portraitColumns || 2;
 	landscapeColumns = params.landscapeColumns || 3;
 	
 	screenWidth = params.width || Ti.Platform.displayCaps.getPlatformWidth();
 	if (OS == 'android') {
-        	screenWidth /= Ti.Platform.displayCaps.logicalDensityFactor;
-    	}
+        screenWidth /= Ti.Platform.displayCaps.logicalDensityFactor;
+    }
 	newWidth = screenWidth - space;
 		
    	orientationCheck();
@@ -89,9 +106,9 @@ var init = function(opts){
 var orientationCheck = function(){
 	if(Titanium.Gesture.isLandscape()){
 		columnWidth = (newWidth / landscapeColumns) - space;
-    	}else if(Titanium.Gesture.isPortrait()){
+    }else if(Titanium.Gesture.isPortrait()){
 		columnWidth = (newWidth / portraitColumns) - space;
-    	}
+    }
 };
 
 var addGridItems = function(args, append){
@@ -99,6 +116,7 @@ var addGridItems = function(args, append){
 		clearGrid();
 	};
 	orientationCheck();
+	itemCount = itemCount + data.length;
 	data = args || {};
 	for (var x=0;x < data.length; x++){
 		addGridItem(data[x]);
@@ -268,6 +286,8 @@ var openModal = function(url){
 };
 
 var clearGrid = function(){
+	itemCount = 0;
+	scrollViewHeight = 0;
 	fgScrollView.removeAllChildren();
 };
 
