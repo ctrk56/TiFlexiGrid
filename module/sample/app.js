@@ -101,7 +101,7 @@ var grid_view = TFG.init({
 	portraitColumns: 2,
 	landscapeColumns: 3,
 	space: 5,
-	lazyLoadingTolerance: 50, //in dp
+	lazyLoadingTolerance: 50, //in dp 
 	gridBackgroundColor:'#fff',
 	itemHeightDelta: 0,
 	itemBackgroundColor:'#eee',
