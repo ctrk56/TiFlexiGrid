@@ -59,7 +59,7 @@ win.addEventListener('open', function(){
 //HERE WE CREATE OUR GRID ITEMS.
 var items = [];
 
-for(var x=0;x<25;x++){
+for(var x=0;x<24;x++){
 	//THIS IS THE ITEM VIEW LAYOUT (RIGHT NOW JUST A VIEW WITH A LABEL)
 	var view = Ti.UI.createView({
 		width:Ti.UI.FILL,
@@ -101,6 +101,7 @@ var grid_view = TFG.init({
 	portraitColumns: 2,
 	landscapeColumns: 3,
 	space: 5,
+	lazyLoadingTolerance: 50, //in dp
 	gridBackgroundColor:'#fff',
 	itemHeightDelta: 0,
 	itemBackgroundColor:'#eee',
